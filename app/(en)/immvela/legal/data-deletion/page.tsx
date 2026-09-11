@@ -46,6 +46,22 @@ import { IMMVELA_URL } from '@/lib/site'
  * and both arrive signed out, so neither can be served by a locale preference.
  * Same shape as `/legal/privacy` next door, and the shape the app's copy used.
  *
+ * ── ⚠️ The German term is PINNED to the app's, not chosen here ─────────────
+ *
+ * "aggregierte Kennzahlen", not "zusammengefasste Reichweitenzahlen". Both are
+ * correct German for the same thing, which is exactly why this drifted: this
+ * page was ported from an earlier draft while the app's own copy and
+ * /legal/privacy both settled on the former.
+ *
+ * It matters because `app.immvela.com/data-deletion` is being KEPT ALIVE
+ * alongside this page rather than deleted, so a reviewer can open both and is
+ * meant to find one document. Two live pages that are supposed to be the same
+ * document, using two different terms for the same data category, is the
+ * drift the #40 split accepted as its cost — worth paying when the documents
+ * say different things by necessity, not worth paying for a synonym.
+ *
+ * If the app's wording changes, change this with it.
+ *
  * ── Provenance: every factual claim, and where it was read ──────────────────
  *
  * Verified against the app repo's `main` on 2026-09-05. The handoff warns that
@@ -158,12 +174,14 @@ export default function ImmvelaDataDeletionPage() {
               <p>
                 Wenn Sie ein Social-Media-Konto mit Immvela verbinden, speichern wir den
                 Zugriffs-Token (verschlüsselt), die Kontokennung der Plattform und den angezeigten
-                Kontonamen. Diese Daten benötigen wir, um in Ihrem Auftrag zu veröffentlichen, um
-                die Gültigkeit der Verbindung aufrechtzuerhalten und um{' '}
-                <strong>zusammengefasste Reichweitenzahlen</strong> zu Ihren Beiträgen abzurufen —
-                Summenwerte je Plattform und je Beitrag (etwa Aufrufe, Reaktionen, Kommentaranzahl),
-                niemals personenbezogene Daten zu einzelnen Nutzerinnen und Nutzern: keine Namen von
-                Kommentierenden, keine Kommentartexte, keine Auswertungen nach Zielgruppenmerkmalen.
+                Kontonamen. Diese Daten benötigen wir für drei Zwecke: um in Ihrem Auftrag zu
+                veröffentlichen, um zu den so veröffentlichten Beiträgen{' '}
+                <strong>aggregierte Kennzahlen</strong> der Plattform abzurufen, und um die
+                Gültigkeit der Verbindung aufrechtzuerhalten. Die Kennzahlen sind Gesamtwerte je
+                Beitrag und Plattform — etwa Aufrufe, Reichweite, Reaktionen, Kommentare, geteilte
+                Inhalte und Klicks, jeweils als Anzahl —, niemals personenbezogene Daten zu
+                einzelnen Nutzerinnen und Nutzern: keine Namen von Kommentierenden, keine
+                Kommentartexte, keine Auswertungen nach Zielgruppenmerkmalen.
               </p>
               <p>
                 <strong>Sie löschen diese Daten selbst, sofort:</strong> Öffnen Sie in Immvela{' '}
@@ -172,11 +190,10 @@ export default function ImmvelaDataDeletionPage() {
               </p>
               <p>
                 Was dabei bestehen bleibt: Aufzeichnungen darüber, <em>dass</em> ein Beitrag
-                veröffentlicht wurde (Zeitpunkt, Kanal), sowie die dazu abgerufenen
-                zusammengefassten Reichweitenzahlen. Sie enthalten keine Zugangsdaten und keine
-                personenbezogenen Daten zu einzelnen Nutzerinnen und Nutzern. Bereits
-                veröffentlichte Beiträge liegen bei der jeweiligen Plattform und werden dort von
-                Ihnen entfernt.
+                veröffentlicht wurde (Zeitpunkt, Kanal), sowie die dazu abgerufenen aggregierten
+                Kennzahlen. Sie enthalten keine Zugangsdaten und keine personenbezogenen Daten zu
+                einzelnen Nutzerinnen und Nutzern. Bereits veröffentlichte Beiträge liegen bei der
+                jeweiligen Plattform und werden dort von Ihnen entfernt.
               </p>
             </Section>
 
