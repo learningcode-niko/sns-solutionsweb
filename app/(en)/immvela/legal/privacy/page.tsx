@@ -54,6 +54,41 @@ import { IMMVELA_URL } from '@/lib/site'
  *     that does not exist, and one that silently does nothing is worse than
  *     none.
  *
+ * ── The Google/YouTube round, 2026-09-10 ───────────────────────────────────
+ *
+ * Google OAuth verification bounced with: "Your privacy policy does not specify
+ * any data protection mechanisms for sensitive data." Two sections answer it:
+ *
+ *   • "Schutz Ihrer Daten / How we protect your data" — the finding itself.
+ *   • "Nutzung der YouTube API Services / Use of YouTube API Services" — NOT in
+ *     the finding list, but a standing YouTube API Services Developer Policies
+ *     §III.A.2 requirement the reviewer checks: the YouTube ToS link, the
+ *     Google Privacy Policy link, what API data is used, and revocation via the
+ *     Google security settings page. Publishing without it invites a second
+ *     round.
+ *
+ * ⚠️ **The two scope names are load-bearing and must match three places on the
+ * day the reviewer looks**: this page, the Cloud Console, and `YOUTUBE_SCOPES`.
+ * The bounce included "scopes shown … different from the scopes configured", so
+ * a drift here is the defect under review. Verified 2026-09-11 against the app
+ * repo's `origin/main`: exactly `youtube.upload` + `youtube.readonly`. The
+ * broad `auth/youtube` scope this page would have mis-stated was removed in
+ * their PR #1260 — the handoff was written while it was still live and warned
+ * the claim was false; it is true now, which is why it was re-checked rather
+ * than trusted either way.
+ *
+ * ⚠️ **This policy must also be LINKED from the OAuth consent screen** in Google
+ * Cloud Console. Google checks the link, not just the text, and nothing in this
+ * repo can do that.
+ *
+ * ⚠️ **One bullet from the source draft is deliberately NOT published**: "Our
+ * own access" (named staff, individual accounts, two-factor). It arrived marked
+ * `‹confirm›`, nobody here can verify who holds the Supabase and Vercel
+ * credentials or whether 2FA is enforced, and the draft's own instruction was
+ * to make it true and publish it or cut it — never publish it unverified,
+ * because Google reads a security section as a set of commitments. Cut. It goes
+ * back in when a human confirms it.
+ *
  * ── Every factual claim, verified against the app repo's main ───────────────
  *
  * Verified 2026-09-05. If one becomes false, this text becomes false.
@@ -80,6 +115,29 @@ import { IMMVELA_URL } from '@/lib/site'
  *     point". Hence the split wording under Aufzeichnungen / Records.
  *   • Full account deletion is manual, within 30 days — no erasure job exists;
  *     docs/gdpr-erasure.md is a design document.
+ *
+ * For the sections added in the Google round, verified 2026-09-11 against
+ * `origin/main`:
+ *
+ *   • exactly two YouTube scopes — `platforms/youtube.ts` `YOUTUBE_SCOPES`.
+ *   • channel name and id read via `channels?part=snippet&mine=true` —
+ *     `platforms/accounts.ts:318`.
+ *   • view/like/comment totals and NOTHING else — `posting/insights/youtube.ts`
+ *     `YOUTUBE_VIDEO_STATISTICS` is exactly those three. ⚠️ If that constant
+ *     grows, this page is stale.
+ *   • AES-256-GCM before storage — `crypto/token-encryption.ts`,
+ *     `createCipheriv("aes-256-gcm", …)`.
+ *   • key in the runtime environment, never in Postgres — same file, read from
+ *     `process.env.TOKEN_ENCRYPTION_KEY`.
+ *   • refuses to store rather than write plaintext — same file, throws when
+ *     `NODE_ENV === "production"` and the key is unset. ⚠️ Development warns
+ *     and writes plaintext, which is why the sentence is scoped to production.
+ *   • row-level security enforces tenant separation — `supabase/migrations/`,
+ *     RLS policies across ten migration files.
+ *   • ⚠️ "encrypted at rest by Supabase" is the ONE claim here not verifiable
+ *     from either repo — it is a property of their platform and plan. It is
+ *     published because it is the substance of Google's finding, and flagged
+ *     for a human to confirm.
  */
 
 export const metadata: Metadata = {
@@ -102,14 +160,18 @@ export const metadata: Metadata = {
   },
 }
 
-const UPDATED_DE = '5. September 2026'
-const UPDATED_EN = 'September 5, 2026'
+const UPDATED_DE = '11. September 2026'
+const UPDATED_EN = 'September 11, 2026'
 
 // Same host now. The app served this page until the 2026-09-05 split put
 // every legal document on the landing page and left the product with
 // outward links only, so this is a relative path and costs no hop.
 const DATA_DELETION_URL = '/legal/data-deletion'
 const CONTACT = 'office@sns-austria.com'
+// The exact revocation URL YouTube API Services Developer Policies §III.A.2
+// names. Google checks that the policy carries it, so it is a constant rather
+// than three hand-typed copies that can drift apart.
+const GOOGLE_PERMISSIONS_URL = 'https://security.google.com/settings/security/permissions'
 
 function Section({
   lang,
@@ -206,19 +268,76 @@ export default function ImmvelaPrivacyPage() {
                 angezeigten Kontonamen. Die Token werden vor dem Speichern verschlüsselt.
               </p>
               <p>
-                Wir verwenden sie, um <strong>in Ihrem Auftrag Beiträge zu veröffentlichen</strong>,
-                um <strong>die Gültigkeit der Verbindung aufrechtzuerhalten</strong> und um{' '}
-                <strong>zusammengefasste Reichweitenzahlen</strong> zu den von Ihnen
-                veröffentlichten Beiträgen abzurufen.
+                Wir verwenden sie <strong>ausschließlich für drei Zwecke</strong>: um in Ihrem
+                Auftrag Beiträge zu veröffentlichen, um zu diesen Beiträgen aggregierte Kennzahlen
+                der Plattform abzurufen, und um die Gültigkeit der Verbindung aufrechtzuerhalten.
               </p>
               <p>
-                Diese Reichweitenzahlen sind{' '}
-                <strong>Summenwerte je Plattform und je Beitrag</strong> — etwa Aufrufe, Reaktionen,
-                Kommentaranzahl oder Weiterleitungen. Wir rufen{' '}
-                <strong>keine personenbezogenen Daten zu einzelnen Nutzerinnen und Nutzern</strong>{' '}
-                ab: keine Namen von Kommentierenden, keine Kommentartexte und keine Auswertungen
-                nach Zielgruppenmerkmalen. Wir lesen keine privaten Nachrichten und keine
-                Kontaktlisten.
+                Die Kennzahlen sind <strong>Gesamtwerte je Beitrag und Plattform</strong> — etwa
+                Aufrufe, Reichweite, Reaktionen, Kommentare, geteilte Inhalte und Klicks, jeweils
+                als Anzahl — und werden unter der Bezeichnung gespeichert, die die jeweilige
+                Plattform dafür verwendet. Wir rufen dazu{' '}
+                <strong>keine Angaben zu einzelnen Personen</strong> ab: keine Namen von
+                Kommentierenden, keine Kommentartexte und keine Auswertungen zur Zusammensetzung
+                Ihres Publikums. Wir lesen keine privaten Nachrichten und keine Kontaktlisten.
+              </p>
+            </Section>
+
+            <Section lang="de" title="Nutzung der YouTube API Services">
+              <p>
+                Für die Veröffentlichung auf YouTube nutzt Immvela die{' '}
+                <strong>YouTube API Services</strong>. Mit der Nutzung dieser Funktionen stimmen Sie
+                den{' '}
+                <a href="https://www.youtube.com/t/terms" target="_blank" rel="noopener noreferrer">
+                  YouTube Terms of Service
+                </a>{' '}
+                zu. Ergänzend gilt die{' '}
+                <a
+                  href="https://policies.google.com/privacy"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Google-Datenschutzerklärung
+                </a>
+                .
+              </p>
+              <p>
+                <strong>Welche Berechtigungen wir anfragen.</strong> Wenn Sie ein YouTube-Konto
+                verbinden, fragen wir bei Google genau zwei Berechtigungen an — nicht mehr, als die
+                Funktionen benötigen:
+              </p>
+              <ul>
+                <li>
+                  <strong>youtube.upload</strong> — um Videos, die Sie in Immvela dafür auswählen,
+                  in Ihren Kanal hochzuladen;
+                </li>
+                <li>
+                  <strong>youtube.readonly</strong> — um den Namen und die Kennung Ihres Kanals
+                  anzuzeigen und um zu den über Immvela veröffentlichten Videos die Gesamtzahlen für
+                  Aufrufe, „Gefällt mir“ und Kommentare abzurufen.
+                </li>
+              </ul>
+              <p>
+                <strong>Welche YouTube-Daten wir speichern.</strong> Das Zugriffs- und das
+                Erneuerungstoken (verschlüsselt), die Kennung und den Namen Ihres Kanals, die
+                Kennung der über Immvela hochgeladenen Videos sowie die genannten Gesamtzahlen mit
+                dem Zeitpunkt ihres Abrufs. Mehr nicht: keine Kommentartexte, keine Namen von
+                Kommentierenden, keine Angaben zur Zusammensetzung Ihres Publikums, keine
+                Wiedergabeverläufe, keine Abonnentenlisten.
+              </p>
+              <p>
+                <strong>Wofür wir sie nicht verwenden.</strong> YouTube-Daten werden nicht für
+                Werbung verwendet, nicht an Dritte verkauft oder weitergegeben, nicht an unseren
+                KI-Dienstleister übermittelt und nicht zum Training von KI-Modellen verwendet.
+              </p>
+              <p>
+                <strong>Zugriff widerrufen.</strong> Sie können den Zugriff von Immvela auf Ihr
+                Google-Konto jederzeit und unabhängig von Immvela entziehen — über die{' '}
+                <a href={GOOGLE_PERMISSIONS_URL} target="_blank" rel="noopener noreferrer">
+                  Google-Sicherheitseinstellungen
+                </a>
+                . Zusätzlich löschen Sie die bei uns gespeicherten Token, indem Sie die Verbindung
+                in Immvela unter <em>Verlag → Verbundene Konten</em> trennen (Abschnitt „Löschung“).
               </p>
             </Section>
 
@@ -235,15 +354,18 @@ export default function ImmvelaPrivacyPage() {
                 Wenn Sie einen Text erzeugen lassen, übermitteln wir die dafür nötigen Objektdaten —{' '}
                 <strong>einschließlich der Objektadresse</strong> und der von Ihnen bestätigten
                 Objektangaben — an unseren KI-Dienstleister Anthropic. Die erzeugten Texte und ein
-                Nutzungsnachweis werden bei uns gespeichert.
+                Nutzungsnachweis werden bei uns gespeichert. Daten aus verbundenen
+                Social-Media-Konten sind davon nicht betroffen; sie werden nicht an Anthropic
+                übermittelt.
               </p>
             </Section>
 
             <Section lang="de" title="Aufzeichnungen">
               <p>
                 Wir speichern, <em>dass</em> ein Beitrag veröffentlicht wurde, mit Zeitpunkt und
-                Kanal, sowie die abgerufenen zusammengefassten Reichweitenzahlen. Diese
-                Aufzeichnungen enthalten keine Zugangsdaten.
+                Kanal, sowie die dazu abgerufenen aggregierten Kennzahlen. Diese Aufzeichnungen
+                enthalten keine Zugangsdaten und keine Angaben zu einzelnen Kommentierenden oder zu
+                Ihrem Publikum; sie sind Ihrem Konto zugeordnet.
               </p>
               <p>
                 Sie <strong>bleiben bestehen</strong>, wenn Sie eine Mediendatei löschen oder eine
@@ -264,6 +386,48 @@ export default function ImmvelaPrivacyPage() {
               </p>
             </Section>
 
+            <Section lang="de" title="Schutz Ihrer Daten">
+              <p>
+                Wir treffen technische und organisatorische Maßnahmen, um die von uns verarbeiteten
+                Daten zu schützen. Im Einzelnen:
+              </p>
+              <ul>
+                <li>
+                  <strong>Übertragung.</strong> Der gesamte Datenverkehr — zwischen Ihrem Browser
+                  und Immvela ebenso wie zwischen Immvela und den Schnittstellen der Plattformen —
+                  erfolgt ausschließlich verschlüsselt über TLS (HTTPS).
+                </li>
+                <li>
+                  <strong>Zugriffstoken der verbundenen Konten.</strong> Diese Token sind das
+                  schutzbedürftigste Datum, das wir halten, und werden vor dem Speichern mit{' '}
+                  <strong>AES-256-GCM</strong> verschlüsselt. Der Schlüssel liegt ausschließlich in
+                  der Laufzeitumgebung und niemals in der Datenbank: ein Datenbankauszug allein
+                  genügt nicht, um Zugriff auf Ihre Konten zu erlangen. Fehlt der Schlüssel, so
+                  verweigert das System im Produktivbetrieb das Speichern, statt Token im Klartext
+                  abzulegen.
+                </li>
+                <li>
+                  <strong>Speicherung.</strong> Datenbank und Dateispeicher werden von Supabase
+                  betrieben und sind dort im Ruhezustand verschlüsselt.
+                </li>
+                <li>
+                  <strong>Trennung der Mandanten.</strong> Jeder Datensatz ist genau einer
+                  Organisation zugeordnet. Diese Trennung wird von der Datenbank selbst auf
+                  Zeilenebene durchgesetzt (Row-Level-Security) und nicht erst von der Anwendung,
+                  sodass ein Fehler in der Anwendung sie nicht aufheben kann.
+                </li>
+                <li>
+                  <strong>Mediendateien.</strong> Fotos und Videos liegen in nicht öffentlichem
+                  Speicher und sind ausschließlich über kurzlebige, signierte Links erreichbar; es
+                  gibt keine öffentlich abrufbare Adresse einer Ihrer Dateien.
+                </li>
+                <li>
+                  <strong>Weitergabe.</strong> Wir verkaufen keine Daten und geben sie außer an die
+                  oben genannten Auftragsverarbeiter nicht weiter.
+                </li>
+              </ul>
+            </Section>
+
             <Section lang="de" title="Speicherdauer">
               <p>
                 Ihre Inhalte bleiben gespeichert, bis Sie sie in Immvela löschen oder Ihr Konto
@@ -278,9 +442,17 @@ export default function ImmvelaPrivacyPage() {
 
             <Section lang="de" title="Löschung">
               <p>
-                Eine Verbindung trennen Sie jederzeit selbst unter <em>Verlag → Konten</em>; der
-                gespeicherte Eintrag wird damit einschließlich der Token endgültig gelöscht — nicht
-                deaktiviert.
+                Eine Verbindung trennen Sie jederzeit selbst unter{' '}
+                <em>Verlag → Verbundene Konten</em>; der gespeicherte Eintrag wird damit
+                einschließlich der Token endgültig gelöscht — nicht deaktiviert.
+              </p>
+              <p>
+                Unabhängig davon können Sie den Zugriff bei der jeweiligen Plattform selbst
+                widerrufen — bei Google unter{' '}
+                <a href={GOOGLE_PERMISSIONS_URL} target="_blank" rel="noopener noreferrer">
+                  security.google.com/settings/security/permissions
+                </a>
+                .
               </p>
               <p>
                 Für die Löschung Ihres gesamten Kontos schreiben Sie an{' '}
@@ -330,15 +502,72 @@ export default function ImmvelaPrivacyPage() {
                 display name. Tokens are encrypted before they are stored.
               </p>
               <p>
-                We use them to <strong>publish posts on your behalf</strong>, to{' '}
-                <strong>keep the connection valid</strong>, and to{' '}
-                <strong>read aggregate engagement figures</strong> for the posts you have published.
+                We use them <strong>solely for three purposes</strong>: to publish posts on your
+                behalf, to retrieve aggregate engagement figures from the platform for those posts,
+                and to keep the connection valid.
               </p>
               <p>
-                Those engagement figures are <strong>totals per platform and per post</strong> — for
-                example views, reactions, comment counts or shares. We do <strong>not</strong>{' '}
-                retrieve personal data about individual users: no commenter names, no comment text,
-                and no audience breakdowns. We do not read private messages or contact lists.
+                Those figures are <strong>totals per post and per platform</strong> — such as views,
+                reach, reactions, comments, shares and clicks, each as a count — and are stored
+                under the name the platform itself gives each metric. We retrieve{' '}
+                <strong>nothing about individual people</strong> in the process: no commenter names,
+                no comment text, and no audience breakdowns. We do not read private messages or
+                contact lists.
+              </p>
+            </Section>
+
+            <Section lang="en" title="Use of YouTube API Services">
+              <p>
+                Immvela uses <strong>YouTube API Services</strong> to publish to YouTube. By using
+                those features you agree to be bound by the{' '}
+                <a href="https://www.youtube.com/t/terms" target="_blank" rel="noopener noreferrer">
+                  YouTube Terms of Service
+                </a>
+                . The{' '}
+                <a
+                  href="https://policies.google.com/privacy"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Google Privacy Policy
+                </a>{' '}
+                applies in addition to this policy.
+              </p>
+              <p>
+                <strong>The permissions we request.</strong> When you connect a YouTube account we
+                ask Google for exactly two permissions — no more than the features require:
+              </p>
+              <ul>
+                <li>
+                  <strong>youtube.upload</strong> — to upload videos you select in Immvela to your
+                  channel;
+                </li>
+                <li>
+                  <strong>youtube.readonly</strong> — to show your channel&apos;s name and
+                  identifier, and to retrieve the total view, like and comment counts for videos
+                  published through Immvela.
+                </li>
+              </ul>
+              <p>
+                <strong>What YouTube data we store.</strong> The access token and refresh token
+                (encrypted), your channel&apos;s identifier and name, the identifiers of videos
+                uploaded through Immvela, and the totals named above together with the time they
+                were retrieved. Nothing further: no comment text, no commenter names, no audience
+                breakdowns, no watch history, no subscriber lists.
+              </p>
+              <p>
+                <strong>What we never do with it.</strong> YouTube data is not used for advertising,
+                is not sold or disclosed to third parties, is not sent to our AI provider, and is
+                not used to train AI models.
+              </p>
+              <p>
+                <strong>Revoking access.</strong> You can withdraw Immvela&apos;s access to your
+                Google account at any time, independently of Immvela, through the{' '}
+                <a href={GOOGLE_PERMISSIONS_URL} target="_blank" rel="noopener noreferrer">
+                  Google security settings page
+                </a>
+                . Separately, disconnecting the account in Immvela under{' '}
+                <em>Verlag → Connected accounts</em> deletes the tokens we hold (see “Deletion”).
               </p>
             </Section>
 
@@ -355,15 +584,17 @@ export default function ImmvelaPrivacyPage() {
                 When you generate text, we send the property details needed for it —{' '}
                 <strong>including the property address</strong> and the property attributes you have
                 confirmed — to our AI provider, Anthropic. The generated text and a record of the
-                generation are stored by us.
+                generation are stored by us. Data from connected social accounts is not part of this
+                and is not sent to Anthropic.
               </p>
             </Section>
 
             <Section lang="en" title="Records">
               <p>
                 We store the fact <em>that</em> a post was published, with its time and channel,
-                together with the aggregate engagement figures retrieved for it. These records
-                contain no credentials.
+                together with the aggregate figures retrieved for it. These records contain no
+                credentials and nothing about individual commenters or your audience; they are
+                attributed to your account.
               </p>
               <p>
                 They <strong>remain</strong> when you delete a media file or disconnect an account.
@@ -383,6 +614,46 @@ export default function ImmvelaPrivacyPage() {
               </p>
             </Section>
 
+            <Section lang="en" title="How we protect your data">
+              <p>
+                We maintain technical and organisational controls over the data we process.
+                Specifically:
+              </p>
+              <ul>
+                <li>
+                  <strong>In transit.</strong> All traffic — between your browser and Immvela, and
+                  between Immvela and the platforms&apos; APIs — is encrypted with TLS (HTTPS).
+                </li>
+                <li>
+                  <strong>Connected-account access tokens.</strong> These are the most sensitive
+                  data we hold, and they are encrypted with <strong>AES-256-GCM</strong> before they
+                  are stored. The key exists only in the runtime environment and never in the
+                  database, so a database dump on its own does not yield access to your accounts. If
+                  the key is absent, the system refuses to store tokens in production rather than
+                  falling back to plaintext.
+                </li>
+                <li>
+                  <strong>At rest.</strong> The database and file storage are operated by Supabase
+                  and are encrypted at rest there.
+                </li>
+                <li>
+                  <strong>Tenant separation.</strong> Every record belongs to exactly one
+                  organisation, and that separation is enforced by the database itself at row level
+                  (row-level security) rather than by the application, so an application fault
+                  cannot lift it.
+                </li>
+                <li>
+                  <strong>Media files.</strong> Photos and videos are held in non-public storage and
+                  are reachable only through short-lived signed links; no file of yours has a
+                  publicly retrievable address.
+                </li>
+                <li>
+                  <strong>Disclosure.</strong> We do not sell data, and we disclose it to no one
+                  beyond the processors named above.
+                </li>
+              </ul>
+            </Section>
+
             <Section lang="en" title="Retention">
               <p>
                 Your content is retained until you delete it in Immvela or your account is deleted.{' '}
@@ -393,9 +664,16 @@ export default function ImmvelaPrivacyPage() {
 
             <Section lang="en" title="Deletion">
               <p>
-                You can disconnect an account yourself at any time under <em>Verlag → Accounts</em>;
-                this permanently deletes the stored record including its tokens — it does not merely
-                deactivate them.
+                You can disconnect an account yourself at any time under{' '}
+                <em>Verlag → Connected accounts</em>; this permanently deletes the stored record
+                including its tokens — it does not merely deactivate them.
+              </p>
+              <p>
+                Independently of that, you can revoke access at the platform itself — for Google at{' '}
+                <a href={GOOGLE_PERMISSIONS_URL} target="_blank" rel="noopener noreferrer">
+                  security.google.com/settings/security/permissions
+                </a>
+                .
               </p>
               <p>
                 To delete your entire account, email <a href={`mailto:${CONTACT}`}>{CONTACT}</a>{' '}

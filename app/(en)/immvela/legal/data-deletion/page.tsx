@@ -167,8 +167,8 @@ export default function ImmvelaDataDeletionPage() {
               </p>
               <p>
                 <strong>Sie löschen diese Daten selbst, sofort:</strong> Öffnen Sie in Immvela{' '}
-                <em>Verlag → Konten</em> und trennen Sie das Konto. Damit wird der gespeicherte
-                Eintrag mitsamt Token endgültig gelöscht — nicht deaktiviert.
+                <em>Verlag → Verbundene Konten</em> und trennen Sie das Konto. Damit wird der
+                gespeicherte Eintrag mitsamt Token endgültig gelöscht — nicht deaktiviert.
               </p>
               <p>
                 Was dabei bestehen bleibt: Aufzeichnungen darüber, <em>dass</em> ein Beitrag
@@ -209,8 +209,8 @@ export default function ImmvelaDataDeletionPage() {
               </p>
               <p>
                 <strong>You can delete this yourself, immediately:</strong> in Immvela, open{' '}
-                <em>Verlag → Accounts</em> and disconnect the account. This permanently deletes the
-                stored record and its tokens — it does not merely deactivate them.
+                <em>Verlag → Connected accounts</em> and disconnect the account. This permanently
+                deletes the stored record and its tokens — it does not merely deactivate them.
               </p>
               <p>
                 What remains afterwards: records that a post <em>was</em> published (time and
