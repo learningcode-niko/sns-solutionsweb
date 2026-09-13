@@ -132,12 +132,61 @@ import { IMMVELA_URL } from '@/lib/site'
  *   • refuses to store rather than write plaintext — same file, throws when
  *     `NODE_ENV === "production"` and the key is unset. ⚠️ Development warns
  *     and writes plaintext, which is why the sentence is scoped to production.
- *   • row-level security enforces tenant separation — `supabase/migrations/`,
- *     RLS policies across ten migration files.
+ *   • ~~row-level security enforces tenant separation — `supabase/migrations/`,
+ *     RLS policies across ten migration files.~~ **CORRECTED 2026-09-13 — see
+ *     the round below. RLS alone was an over-claim.**
  *   • ⚠️ "encrypted at rest by Supabase" is the ONE claim here not verifiable
  *     from either repo — it is a property of their platform and plan. It is
  *     published because it is the substance of Google's finding, and flagged
  *     for a human to confirm.
+ *
+ * ── The app repo's own review round, 2026-09-13 ─────────────────────────────
+ *
+ * The 2026-09-10 draft that produced this page was itself reviewed in the app
+ * repo (`docs/legal-immvela-privacy-policy.md`, commit 3582744b) and several of
+ * its claims were corrected there AFTER this page had been published from the
+ * pre-review version. This page was behind by four paragraphs. Each correction
+ * is re-verified here against the app repo's `origin/main`, not copied across:
+ *
+ *   • **Whole uploaded DOCUMENTS go to Anthropic, not only property details.**
+ *     `lib/extraction/actions.ts:324` sends `documents: [{ mediaType,
+ *     dataBase64 }]` — the file is downloaded, base64'd and sent entire. A
+ *     `grundbuchauszug` (`lib/documents/kinds.ts`) routinely names owners and
+ *     other parties, so third-party personal data leaves the platform. That was
+ *     disclosed nowhere. It is the most material of the set.
+ *   • **The agent's own kept texts are sent as style samples.**
+ *     `modules/quill/voice.ts:72` reads `quill_edit` rows with `kind = 'kept'`,
+ *     pinned to the agent's own org and user, and `modules/quill/actions.ts:721`
+ *     passes them into the generation. ⚠️ The source draft called this a
+ *     "stored style profile"; there is no such setting, and the wording here
+ *     says what the code does instead.
+ *   • **Anthropic's processor entry had to widen** to name document extraction,
+ *     which follows from the first bullet: an entry naming only "text
+ *     generation" understates what that processor processes.
+ *   • **Tenant separation is checked in the application AND at row level.** The
+ *     old sentence said RLS did it "rather than by the application, so an
+ *     application fault cannot lift it" — refuted three ways by the app repo's
+ *     own files: `docs/tenancy-enforcement.md` requires both and says not to
+ *     treat RLS as sufficient on its own; `modules/publishing/CLAUDE.md` records
+ *     that `storage.objects` has NO policies, so media tenancy is the
+ *     application's; and the service role bypasses RLS on the paths that write
+ *     this data. Google reads a security section as a set of commitments, and
+ *     this was a commitment the code does not keep.
+ *   • **The YouTube stored-data list gained two items** — the token's expiry and
+ *     the granted-permission list, both columns on `platform_connection`
+ *     (`0011_publishing.sql`: `token_expires_at`, `scopes`). That list is
+ *     exhaustive by its own wording ("Nothing further"), so an omission makes
+ *     the sentence false rather than merely short.
+ *
+ * ⚠️ **Deliberately NOT taken from that round: the Deletion and Records
+ * wording.** The app repo's draft is BEHIND this page on both — it still points
+ * at `app.immvela.com/data-deletion`, which the 2026-09-05 split retired, and it
+ * files the scheduled-posts sentence under Retention where this page has it
+ * under Records. A wholesale paste from that draft would regress both sections,
+ * which is why the changes above are surgical.
+ *
+ * ⚠️ **"Our own access" is STILL cut.** That round did not change its
+ * `‹confirm›` standing and nobody has confirmed it. See the note above.
  */
 
 export const metadata: Metadata = {
@@ -160,8 +209,8 @@ export const metadata: Metadata = {
   },
 }
 
-const UPDATED_DE = '11. September 2026'
-const UPDATED_EN = 'September 11, 2026'
+const UPDATED_DE = '13. September 2026'
+const UPDATED_EN = 'September 13, 2026'
 
 // Same host now. The app served this page until the 2026-09-05 split put
 // every legal document on the landing page and left the product with
@@ -321,7 +370,8 @@ export default function ImmvelaPrivacyPage() {
                 <strong>Welche YouTube-Daten wir speichern.</strong> Das Zugriffs- und das
                 Erneuerungstoken (verschlüsselt), die Kennung und den Namen Ihres Kanals, die
                 Kennung der über Immvela hochgeladenen Videos sowie die genannten Gesamtzahlen mit
-                dem Zeitpunkt ihres Abrufs. Mehr nicht: keine Kommentartexte, keine Namen von
+                dem Zeitpunkt ihres Abrufs, dazu den Ablaufzeitpunkt des Tokens und die Liste der
+                von Ihnen erteilten Berechtigungen. Mehr nicht: keine Kommentartexte, keine Namen von
                 Kommentierenden, keine Angaben zur Zusammensetzung Ihres Publikums, keine
                 Wiedergabeverläufe, keine Abonnentenlisten.
               </p>
@@ -354,9 +404,19 @@ export default function ImmvelaPrivacyPage() {
                 Wenn Sie einen Text erzeugen lassen, übermitteln wir die dafür nötigen Objektdaten —{' '}
                 <strong>einschließlich der Objektadresse</strong> und der von Ihnen bestätigten
                 Objektangaben — an unseren KI-Dienstleister Anthropic. Die erzeugten Texte und ein
-                Nutzungsnachweis werden bei uns gespeichert. Daten aus verbundenen
-                Social-Media-Konten sind davon nicht betroffen; sie werden nicht an Anthropic
-                übermittelt.
+                Nutzungsnachweis werden bei uns gespeichert.
+              </p>
+              <p>
+                Wenn Sie ein Dokument zur Auswertung hochladen — etwa einen Energieausweis oder
+                einen Grundbuchauszug — übermitteln wir die <strong>vollständige Datei</strong> an
+                Anthropic, damit die darin enthaltenen Angaben ausgelesen werden können. Ein
+                Grundbuchauszug kann dabei Namen von Eigentümerinnen und Eigentümern sowie weiterer
+                Beteiligter enthalten. Ebenfalls übermittelt werden einige Ihrer zuvor in Immvela
+                behaltenen Texte, als Stilbeispiele, damit die Erzeugung Ihrem Schreibstil folgt.
+              </p>
+              <p>
+                Daten aus verbundenen Social-Media-Konten sind davon nicht betroffen; sie werden
+                nicht an Anthropic übermittelt.
               </p>
             </Section>
 
@@ -378,7 +438,8 @@ export default function ImmvelaPrivacyPage() {
             <Section lang="de" title="Auftragsverarbeiter">
               <p>
                 Supabase (Datenbank und Dateispeicher), Vercel (Hosting), Trigger.dev
-                (Hintergrundaufträge) und Anthropic (Texterstellung).
+                (Hintergrundaufträge) und Anthropic (Texterstellung und Auswertung hochgeladener
+                Dokumente).
               </p>
               <p>
                 Beiträge, die Sie veröffentlichen, werden an die von Ihnen gewählte Plattform
@@ -412,9 +473,10 @@ export default function ImmvelaPrivacyPage() {
                 </li>
                 <li>
                   <strong>Trennung der Mandanten.</strong> Jeder Datensatz ist genau einer
-                  Organisation zugeordnet. Diese Trennung wird von der Datenbank selbst auf
-                  Zeilenebene durchgesetzt (Row-Level-Security) und nicht erst von der Anwendung,
-                  sodass ein Fehler in der Anwendung sie nicht aufheben kann.
+                  Organisation zugeordnet, und diese Trennung wird an <strong>zwei</strong> Stellen
+                  geprüft: von der Anwendung bei jedem Zugriff und zusätzlich von der Datenbank
+                  selbst auf Zeilenebene (Row-Level-Security). Für Dateien im Medienspeicher prüft
+                  sie die Anwendung.
                 </li>
                 <li>
                   <strong>Mediendateien.</strong> Fotos und Videos liegen in nicht öffentlichem
@@ -552,7 +614,8 @@ export default function ImmvelaPrivacyPage() {
                 <strong>What YouTube data we store.</strong> The access token and refresh token
                 (encrypted), your channel&apos;s identifier and name, the identifiers of videos
                 uploaded through Immvela, and the totals named above together with the time they
-                were retrieved. Nothing further: no comment text, no commenter names, no audience
+                were retrieved, plus the token&apos;s expiry time and the list of permissions you
+                granted. Nothing further: no comment text, no commenter names, no audience
                 breakdowns, no watch history, no subscriber lists.
               </p>
               <p>
@@ -584,8 +647,19 @@ export default function ImmvelaPrivacyPage() {
                 When you generate text, we send the property details needed for it —{' '}
                 <strong>including the property address</strong> and the property attributes you have
                 confirmed — to our AI provider, Anthropic. The generated text and a record of the
-                generation are stored by us. Data from connected social accounts is not part of this
-                and is not sent to Anthropic.
+                generation are stored by us.
+              </p>
+              <p>
+                When you upload a document for extraction — an energy certificate (Energieausweis)
+                or a land-register extract (Grundbuchauszug) — we send the{' '}
+                <strong>complete file</strong> to Anthropic so that the values in it can be read
+                out. A land-register extract may name owners and other parties. Some of your own
+                previously kept texts are sent as well, as style samples, so that generation follows
+                your writing style.
+              </p>
+              <p>
+                Data from connected social accounts is not part of this and is not sent to
+                Anthropic.
               </p>
             </Section>
 
@@ -606,7 +680,7 @@ export default function ImmvelaPrivacyPage() {
             <Section lang="en" title="Processors">
               <p>
                 Supabase (database and file storage), Vercel (hosting), Trigger.dev (background
-                jobs) and Anthropic (text generation).
+                jobs) and Anthropic (text generation, and extraction from uploaded documents).
               </p>
               <p>
                 Posts you publish are transmitted to the platform you select and are then subject to
@@ -638,9 +712,10 @@ export default function ImmvelaPrivacyPage() {
                 </li>
                 <li>
                   <strong>Tenant separation.</strong> Every record belongs to exactly one
-                  organisation, and that separation is enforced by the database itself at row level
-                  (row-level security) rather than by the application, so an application fault
-                  cannot lift it.
+                  organisation, and that separation is checked in <strong>two</strong> places: by
+                  the application on every access, and again by the database itself at row level
+                  (row-level security). For files in media storage it is enforced by the
+                  application.
                 </li>
                 <li>
                   <strong>Media files.</strong> Photos and videos are held in non-public storage and
