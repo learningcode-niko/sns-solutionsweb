@@ -14,7 +14,7 @@ export const metadata: Metadata = {
   },
 }
 
-const UPDATED = 'July 30, 2026'
+const UPDATED = 'September 15, 2026'
 
 export default function PrivacyPage() {
   return (
@@ -213,11 +213,9 @@ export default function PrivacyPage() {
           </li>
         </ul>
         <p>
-          Platform access tokens are encrypted at rest. Access by SNS personnel
-          is restricted to those who need it and is logged. Where a
-          sub-processor involves a transfer outside the EU/EEA, that transfer is
-          covered by a data processing agreement and safeguarded by the EU
-          Standard Contractual Clauses.
+          Where a sub-processor involves a transfer outside the EU/EEA, that
+          transfer is covered by a data processing agreement and safeguarded by
+          the EU Standard Contractual Clauses.
         </p>
 
         <h3>4.6 Connected publishing platforms</h3>
@@ -267,6 +265,125 @@ export default function PrivacyPage() {
             immvela.com/legal/data-deletion
           </a>
           .
+        </p>
+
+        <h3>4.8 Data security</h3>
+        <p>
+          We maintain technical and organisational security procedures to
+          protect the confidentiality and integrity of the data processed in
+          Immvela. These apply equally to all data we receive from connected
+          publishing platforms, including Google and YouTube.
+        </p>
+        <ul>
+          <li>
+            <strong>In transit.</strong> All traffic, between the user’s browser
+            and Immvela and between Immvela and the platforms’ APIs, is
+            encrypted with TLS (HTTPS).
+          </li>
+          <li>
+            <strong>Connected-account access tokens.</strong> Access and refresh
+            tokens for connected accounts, including those issued by Google and
+            YouTube, are the most sensitive data we hold. They are encrypted
+            with AES-256-GCM before they are stored. The key exists only in the
+            runtime environment and never in the database, so a database dump on
+            its own does not yield access to a connected account. If the key is
+            absent, the system refuses to store tokens in production rather than
+            falling back to plaintext.
+          </li>
+          <li>
+            <strong>At rest.</strong> The database and file storage are operated
+            by Supabase in the European Union (eu-central-1, Frankfurt, Germany)
+            and are encrypted at rest there.
+          </li>
+          <li>
+            <strong>Tenant separation.</strong> Every record belongs to exactly
+            one organisation, and that separation is checked in two places: by
+            the application on every access, and again by the database itself at
+            row level (row-level security). For files in media storage it is
+            enforced by the application.
+          </li>
+          <li>
+            <strong>Media files.</strong> Photos and videos are held in
+            non-public storage and are reachable only through short-lived signed
+            links; no such file has a publicly retrievable address.
+          </li>
+          <li>
+            <strong>Disclosure.</strong> We do not sell data, do not use it for
+            advertising, and do not disclose it beyond the processors named in
+            section 4.5 and the connected publishing platforms in section 4.6.
+            Data received from Google and YouTube is not sent to our AI provider
+            and is not used to train AI models.
+          </li>
+        </ul>
+        <p>
+          Immvela’s use of information received from Google APIs adheres to the
+          Google API Services User Data Policy, including the Limited Use
+          requirements.
+        </p>
+
+        <h3>4.9 Use of YouTube API Services</h3>
+        <p>
+          Immvela uses the <strong>YouTube API Services</strong> to publish to
+          YouTube. By using those features you agree to be bound by the{' '}
+          <a
+            href="https://www.youtube.com/t/terms"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            YouTube Terms of Service
+          </a>
+          . The{' '}
+          <a
+            href="https://policies.google.com/privacy"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Google Privacy Policy
+          </a>{' '}
+          applies in addition to this policy.
+        </p>
+        <p>
+          <strong>The permissions we request.</strong> When a YouTube account is
+          connected we ask Google for exactly two permissions, no more than the
+          features require:
+        </p>
+        <ul>
+          <li>
+            <strong>youtube.upload</strong>, to upload videos selected in
+            Immvela to your channel;
+          </li>
+          <li>
+            <strong>youtube.readonly</strong>, to show your channel’s name and
+            identifier, and to retrieve the total view, like and comment counts
+            for videos published through Immvela.
+          </li>
+        </ul>
+        <p>
+          <strong>What YouTube data we store.</strong> The access token and
+          refresh token (encrypted), your channel’s identifier and name, the
+          identifiers of videos uploaded through Immvela, the totals named above
+          together with the time they were retrieved, and the token’s expiry
+          time and the list of permissions granted. Nothing further: no comment
+          text, no commenter names, no audience breakdowns, no watch history, no
+          subscriber lists.
+        </p>
+        <p>
+          <strong>What we never do with it.</strong> YouTube data is not used
+          for advertising, is not sold or disclosed to third parties, is not
+          sent to our AI provider, and is not used to train AI models.
+        </p>
+        <p>
+          <strong>Revoking access.</strong> You can withdraw Immvela’s access to
+          your Google account at any time, independently of Immvela, through the{' '}
+          <a
+            href="https://security.google.com/settings/security/permissions"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Google security settings page
+          </a>
+          . Separately, disconnecting a connected account in Immvela deletes the
+          tokens held there.
         </p>
 
         <h2>5. Server log files</h2>
