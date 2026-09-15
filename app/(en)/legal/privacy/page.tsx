@@ -269,26 +269,26 @@ export default function PrivacyPage() {
 
         <h3>4.8 Data security</h3>
         <p>
-          We maintain technical and organisational security procedures to
-          protect the confidentiality and integrity of the data processed in
-          Immvela. These apply equally to all data we receive from connected
-          publishing platforms, including Google and YouTube.
+          We maintain technical and organisational security measures to protect
+          the confidentiality and integrity of the data processed in Immvela.
+          These apply equally to all data we receive from connected publishing
+          platforms, including Google and YouTube.
         </p>
         <ul>
           <li>
-            <strong>In transit.</strong> All traffic, between the user’s browser
-            and Immvela and between Immvela and the platforms’ APIs, is
+            <strong>In transit.</strong> All traffic between the user’s browser
+            and Immvela, and between Immvela and the platforms’ APIs, is
             encrypted with TLS (HTTPS).
           </li>
           <li>
             <strong>Connected-account access tokens.</strong> Access and refresh
             tokens for connected accounts, including those issued by Google and
-            YouTube, are the most sensitive data we hold. They are encrypted
-            with AES-256-GCM before they are stored. The key exists only in the
-            runtime environment and never in the database, so a database dump on
-            its own does not yield access to a connected account. If the key is
-            absent, the system refuses to store tokens in production rather than
-            falling back to plaintext.
+            YouTube, are the most security-sensitive data we hold. They are
+            encrypted with AES-256-GCM before they are stored. The key exists
+            only in the runtime environment and never in the database, so a
+            database dump on its own does not yield access to a connected
+            account. If the key is absent, the system refuses to store tokens in
+            production rather than falling back to plaintext.
           </li>
           <li>
             <strong>At rest.</strong> The database and file storage are operated
@@ -297,10 +297,13 @@ export default function PrivacyPage() {
           </li>
           <li>
             <strong>Tenant separation.</strong> Every record belongs to exactly
-            one organisation, and that separation is checked in two places: by
-            the application on every access, and again by the database itself at
-            row level (row-level security). For files in media storage it is
-            enforced by the application.
+            one organisation, and the application checks that separation on
+            every access. Where a request runs under the user’s own sign-in, the
+            database enforces it a second time at row level (row-level
+            security). Background jobs and the server-side paths that store a
+            platform token run with elevated database rights, and there the
+            application check is the boundary, as it is for files in media
+            storage.
           </li>
           <li>
             <strong>Media files.</strong> Photos and videos are held in
@@ -308,17 +311,20 @@ export default function PrivacyPage() {
             links; no such file has a publicly retrievable address.
           </li>
           <li>
-            <strong>Disclosure.</strong> We do not sell data, do not use it for
-            advertising, and do not disclose it beyond the processors named in
-            section 4.5 and the connected publishing platforms in section 4.6.
-            Data received from Google and YouTube is not sent to our AI provider
-            and is not used to train AI models.
+            <strong>Disclosure.</strong> We do not sell data and do not use it
+            for advertising. We disclose it only to the sub-processors named in
+            Section 4.5 and to the connected publishing platforms in Section
+            4.6. Data received from Google and YouTube is not sent to our AI
+            provider and is not used to train AI models.
           </li>
         </ul>
         <p>
-          Immvela’s use of information received from Google APIs adheres to the
-          Google API Services User Data Policy, including the Limited Use
-          requirements.
+          Immvela’s use and transfer to any other app of information received
+          from Google APIs will adhere to the{' '}
+          <a href="https://developers.google.com/terms/api-services-user-data-policy" target="_blank" rel="noopener noreferrer">
+            Google API Services User Data Policy
+          </a>
+          , including the Limited Use requirements.
         </p>
 
         <h3>4.9 Use of YouTube API Services</h3>
@@ -361,11 +367,16 @@ export default function PrivacyPage() {
         <p>
           <strong>What YouTube data we store.</strong> The access token and
           refresh token (encrypted), your channel’s identifier and name, the
-          identifiers of videos uploaded through Immvela, the totals named above
-          together with the time they were retrieved, and the token’s expiry
-          time and the list of permissions granted. Nothing further: no comment
-          text, no commenter names, no audience breakdowns, no watch history, no
-          subscriber lists.
+          identifiers of videos published through Immvela, the totals named
+          above together with the time they were retrieved, and the token’s
+          expiry time and the list of permissions granted. Nothing further: no
+          comment text, no commenter names, no audience breakdowns, no watch
+          history, no subscriber lists.
+        </p>
+        <p>
+          <strong>Who processes it.</strong> YouTube data is processed on our
+          behalf by the sub-processors named in Section 4.5, and is disclosed to
+          no one else.
         </p>
         <p>
           <strong>What we never do with it.</strong> YouTube data is not used
@@ -382,8 +393,8 @@ export default function PrivacyPage() {
           >
             Google security settings page
           </a>
-          . Separately, disconnecting a connected account in Immvela deletes the
-          tokens held there.
+          . In addition, disconnecting a connected account in Immvela deletes
+          the tokens held there.
         </p>
 
         <h2>5. Server log files</h2>
