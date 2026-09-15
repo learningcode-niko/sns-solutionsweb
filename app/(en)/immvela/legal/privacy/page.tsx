@@ -187,6 +187,33 @@ import { IMMVELA_URL } from '@/lib/site'
  *
  * ⚠️ **"Our own access" is STILL cut.** That round did not change its
  * `‹confirm›` standing and nobody has confirmed it. See the note above.
+ *
+ * ── The parity round, 2026-09-15 ────────────────────────────────────────────
+ *
+ * The SNS policy at sns-austria.com/legal/privacy — the URL the OAuth consent
+ * screen actually points at — gained its own 4.8/4.9 this day. Comparing the
+ * two live documents surfaced two gaps on THIS page, neither of them a
+ * contradiction, both of them this page being the weaker of the pair:
+ *
+ *   • **Google's Limited Use affirmation was absent entirely.** Not weak —
+ *     absent: zero occurrences of "Limited Use", "User Data Policy" or "Google
+ *     API Services" in the body. The substance was already here (the YouTube
+ *     section promises no ads, no sale, nothing to the AI provider, no model
+ *     training), but the sentence a reviewer string-matches was not, and the
+ *     canonical form is "use **and transfer to any other app** ... **will
+ *     adhere**", which is wider than a use-only claim. Added to both halves.
+ *   • **The Disclosure bullet said "to no one beyond the processors named
+ *     above"** while the whole product transmits posts to the platform the
+ *     customer selects. A platform is a recipient, not a processor, so the
+ *     bullet was false on its face and the saving context sat in a different
+ *     section. Both halves now name the platforms.
+ *
+ * ⚠️ **NOT changed, and deliberately:** the tenant-separation bullet. A review
+ * of the SNS page found "checked in two places" still over-claims, because the
+ * service role bypasses RLS on every token WRITE (`platform_connection` carries
+ * a SELECT-only policy). The SNS page took the sharper wording. **This page is
+ * now the weaker of the two on that bullet and should follow** — left out here
+ * only to keep this diff to the parity gaps it set out to close.
  */
 
 export const metadata: Metadata = {
@@ -209,8 +236,8 @@ export const metadata: Metadata = {
   },
 }
 
-const UPDATED_DE = '13. September 2026'
-const UPDATED_EN = 'September 13, 2026'
+const UPDATED_DE = '15. September 2026'
+const UPDATED_EN = 'September 15, 2026'
 
 // Same host now. The app served this page until the 2026-09-05 split put
 // every legal document on the landing page and left the product with
@@ -221,6 +248,11 @@ const CONTACT = 'office@sns-austria.com'
 // names. Google checks that the policy carries it, so it is a constant rather
 // than three hand-typed copies that can drift apart.
 const GOOGLE_PERMISSIONS_URL = 'https://security.google.com/settings/security/permissions'
+// Google's canonical Limited Use affirmation is string-matched by reviewers, so
+// the policy it names is a link and a constant for the same reason as the URL
+// above: two hand-typed copies, one per language half, are two things that drift.
+const GOOGLE_USER_DATA_POLICY_URL =
+  'https://developers.google.com/terms/api-services-user-data-policy'
 
 function Section({
   lang,
@@ -389,6 +421,14 @@ export default function ImmvelaPrivacyPage() {
                 . Zusätzlich löschen Sie die bei uns gespeicherten Token, indem Sie die Verbindung
                 in Immvela unter <em>Verlag → Verbundene Konten</em> trennen (Abschnitt „Löschung“).
               </p>
+              <p>
+                Die Nutzung der von Google-APIs erhaltenen Daten durch Immvela sowie deren
+                Weitergabe an andere Apps entsprechen der{' '}
+                <a href={GOOGLE_USER_DATA_POLICY_URL} target="_blank" rel="noopener noreferrer">
+                  Google API Services User Data Policy
+                </a>{' '}
+                einschließlich der Limited-Use-Anforderungen.
+              </p>
             </Section>
 
             <Section lang="de" title="Inhalte, die Sie anlegen">
@@ -484,8 +524,9 @@ export default function ImmvelaPrivacyPage() {
                   gibt keine öffentlich abrufbare Adresse einer Ihrer Dateien.
                 </li>
                 <li>
-                  <strong>Weitergabe.</strong> Wir verkaufen keine Daten und geben sie außer an die
-                  oben genannten Auftragsverarbeiter nicht weiter.
+                  <strong>Weitergabe.</strong> Wir verkaufen keine Daten. Eine Weitergabe erfolgt
+                  ausschließlich an die oben genannten Auftragsverarbeiter und an die von Ihnen
+                  verbundenen Veröffentlichungsplattformen.
                 </li>
               </ul>
             </Section>
@@ -632,6 +673,14 @@ export default function ImmvelaPrivacyPage() {
                 . Separately, disconnecting the account in Immvela under{' '}
                 <em>Verlag → Connected accounts</em> deletes the tokens we hold (see “Deletion”).
               </p>
+              <p>
+                Immvela&apos;s use and transfer to any other app of information received from Google
+                APIs will adhere to the{' '}
+                <a href={GOOGLE_USER_DATA_POLICY_URL} target="_blank" rel="noopener noreferrer">
+                  Google API Services User Data Policy
+                </a>
+                , including the Limited Use requirements.
+              </p>
             </Section>
 
             <Section lang="en" title="Content you create">
@@ -723,8 +772,8 @@ export default function ImmvelaPrivacyPage() {
                   publicly retrievable address.
                 </li>
                 <li>
-                  <strong>Disclosure.</strong> We do not sell data, and we disclose it to no one
-                  beyond the processors named above.
+                  <strong>Disclosure.</strong> We do not sell data. We disclose it only to the
+                  processors named above and to the publishing platforms you connect.
                 </li>
               </ul>
             </Section>
