@@ -14,7 +14,7 @@ export const metadata: Metadata = {
   },
 }
 
-const UPDATED = 'July 30, 2026'
+const UPDATED = 'September 15, 2026'
 
 export default function TermsPage() {
   return (
@@ -113,6 +113,38 @@ export default function TermsPage() {
           additionally governed by each platform’s own developer terms and
           policies (Meta, LinkedIn, Google/YouTube, TikTok), and the client is
           responsible for complying with those terms.
+        </p>
+        <p>
+          Immvela publishes to YouTube using the YouTube API Services.{' '}
+          <strong>
+            By using those features, you agree to be bound by the{' '}
+            <a
+              href="https://www.youtube.com/t/terms"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              YouTube Terms of Service
+            </a>
+            .
+          </strong>{' '}
+          The{' '}
+          <a
+            href="https://policies.google.com/privacy"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Google Privacy Policy
+          </a>{' '}
+          applies to data Google receives, and access granted to Immvela can be
+          withdrawn at any time through the{' '}
+          <a
+            href="https://security.google.com/settings/security/permissions"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Google security settings page
+          </a>
+          .
         </p>
 
         <h3>4.3 AI-generated output is a draft, not advice</h3>
