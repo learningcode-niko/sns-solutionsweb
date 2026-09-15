@@ -14,7 +14,7 @@ export const metadata: Metadata = {
   },
 }
 
-const UPDATED = '30. Juli 2026'
+const UPDATED = '15. September 2026'
 
 export default function PrivacyPageDe() {
   return (
@@ -225,11 +225,9 @@ export default function PrivacyPageDe() {
           </li>
         </ul>
         <p>
-          Zugangstoken der Plattformen werden verschlüsselt gespeichert. Der
-          Zugriff durch SNS-Mitarbeitende ist auf die dafür notwendigen Personen
-          beschränkt und wird protokolliert. Soweit ein Unterauftragsverarbeiter
-          eine Übermittlung außerhalb der EU/des EWR umfasst, ist diese durch
-          einen Auftragsverarbeitungsvertrag und die EU-Standardvertragsklauseln
+          Soweit ein Unterauftragsverarbeiter eine Übermittlung außerhalb der
+          EU/des EWR umfasst, ist diese durch einen
+          Auftragsverarbeitungsvertrag und die EU-Standardvertragsklauseln
           abgesichert.
         </p>
 
@@ -285,6 +283,147 @@ export default function PrivacyPageDe() {
             immvela.com/legal/data-deletion
           </a>
           .
+        </p>
+
+        <h3>4.8 Datensicherheit</h3>
+        <p>
+          Wir treffen geeignete technische und organisatorische Maßnahmen, um
+          die Vertraulichkeit und Integrität der in Immvela verarbeiteten Daten
+          zu schützen. Diese gelten gleichermaßen für alle Daten, die wir von
+          verbundenen Veröffentlichungsplattformen, einschließlich Google und
+          YouTube, erhalten.
+        </p>
+        <ul>
+          <li>
+            <strong>Übertragung.</strong> Der gesamte Datenverkehr zwischen dem
+            Browser des Nutzers und Immvela sowie zwischen Immvela und den APIs
+            der Plattformen erfolgt ausschließlich verschlüsselt über TLS
+            (HTTPS).
+          </li>
+          <li>
+            <strong>Zugangstoken der verbundenen Konten.</strong> Zugangs- und
+            Refresh-Token verbundener Konten, einschließlich der von Google und
+            YouTube ausgestellten, sind die sicherheitskritischsten Daten, die
+            wir speichern. Sie werden vor dem Speichern mit AES-256-GCM
+            verschlüsselt. Der Schlüssel liegt ausschließlich in der
+            Laufzeitumgebung und niemals in der Datenbank; ein Datenbankauszug
+            allein genügt daher nicht, um Zugriff auf ein verbundenes Konto zu
+            erlangen. Fehlt der Schlüssel, verweigert das System im
+            Produktivbetrieb die Speicherung der Token, statt sie im Klartext
+            abzulegen.
+          </li>
+          <li>
+            <strong>Speicherung.</strong> Datenbank und Dateispeicher werden von
+            Supabase in der Europäischen Union (eu-central-1, Frankfurt,
+            Deutschland) betrieben und dort verschlüsselt gespeichert.
+          </li>
+          <li>
+            <strong>Trennung der Mandanten.</strong> Jeder Datensatz ist genau
+            einer Organisation zugeordnet, und die Anwendung prüft diese
+            Trennung bei jedem Zugriff. Läuft eine Anfrage unter der eigenen
+            Anmeldung des Nutzers, setzt die Datenbank sie zusätzlich auf
+            Zeilenebene durch (Row-Level-Security). Hintergrundaufgaben und
+            serverseitige Vorgänge, die ein Plattform-Token speichern, nutzen
+            erweiterte Datenbankrechte; dort ist die Prüfung der Anwendung die
+            Grenze, ebenso wie bei Dateien im Medienspeicher.
+          </li>
+          <li>
+            <strong>Mediendateien.</strong> Fotos und Videos liegen in nicht
+            öffentlichem Speicher und sind ausschließlich über kurzzeitig
+            gültige, signierte Links erreichbar; keine dieser Dateien ist
+            öffentlich adressierbar.
+          </li>
+          <li>
+            <strong>Weitergabe.</strong> Wir verkaufen keine Daten und nutzen
+            sie nicht für Werbung. Eine Weitergabe erfolgt ausschließlich an die
+            in Abschnitt 4.5 genannten Unterauftragsverarbeiter und an die
+            verbundenen Veröffentlichungsplattformen (Abschnitt 4.6). Von Google
+            und YouTube erhaltene Daten werden nicht an unseren KI-Dienstleister
+            übermittelt und nicht zum Training von KI-Modellen verwendet.
+          </li>
+        </ul>
+        <p>
+          Die Nutzung der von Google-APIs erhaltenen Daten durch Immvela sowie
+          deren Weitergabe an andere Apps entsprechen der{' '}
+          <a href="https://developers.google.com/terms/api-services-user-data-policy" target="_blank" rel="noopener noreferrer">
+            Google API Services User Data Policy
+          </a>{' '}
+          einschließlich der Limited-Use-Anforderungen.
+        </p>
+
+        <h3>4.9 Nutzung der YouTube API Services</h3>
+        <p>
+          Für die Veröffentlichung auf YouTube nutzt Immvela die{' '}
+          <strong>YouTube API Services</strong>. Mit der Nutzung dieser
+          Funktionen erklären Sie sich damit einverstanden, an die{' '}
+          <a
+            href="https://www.youtube.com/t/terms"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            YouTube Terms of Service
+          </a>{' '}
+          gebunden zu sein. Ergänzend gilt die{' '}
+          <a
+            href="https://policies.google.com/privacy"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Google-Datenschutzerklärung
+          </a>
+          .
+        </p>
+        <p>
+          <strong>Die angeforderten Berechtigungen.</strong> Beim Verbinden eines
+          YouTube-Kontos fordern wir bei Google genau zwei Berechtigungen an,
+          also nicht mehr, als die Funktionen benötigen:
+        </p>
+        <ul>
+          <li>
+            <strong>youtube.upload</strong>, um in Immvela ausgewählte Videos
+            auf Ihren Kanal hochzuladen;
+          </li>
+          <li>
+            <strong>youtube.readonly</strong>, um Name und Kennung Ihres Kanals
+            anzuzeigen und die Gesamtzahlen der Aufrufe, Likes und Kommentare zu
+            den über Immvela veröffentlichten Videos abzurufen.
+          </li>
+        </ul>
+        <p>
+          <strong>Welche YouTube-Daten wir speichern.</strong> Zugangs- und
+          Refresh-Token (verschlüsselt), Kennung und Name Ihres Kanals, die
+          Kennungen der über Immvela veröffentlichten Videos, die genannten
+          Gesamtzahlen samt Abrufzeitpunkt sowie den Ablaufzeitpunkt des Tokens
+          und die Liste der erteilten Berechtigungen. Nichts darüber hinaus:
+          keine Kommentartexte, keine Namen von Kommentierenden, keine
+          Auswertungen nach Zielgruppenmerkmalen, kein Wiedergabeverlauf, keine
+          Abonnentenlisten.
+        </p>
+        <p>
+          <strong>Wer diese Daten verarbeitet.</strong> YouTube-Daten werden in
+          unserem Auftrag von den in Abschnitt 4.5 genannten
+          Unterauftragsverarbeitern verarbeitet und darüber hinaus an niemanden
+          weitergegeben.
+        </p>
+        <p>
+          <strong>Was wir damit nie tun.</strong> YouTube-Daten werden nicht für
+          Werbung verwendet, nicht verkauft oder an Dritte weitergegeben, nicht
+          an unseren KI-Dienstleister übermittelt und nicht zum Training von
+          KI-Modellen verwendet.
+        </p>
+        <p>
+          <strong>Zugriff widerrufen.</strong> Sie können den Zugriff von
+          Immvela auf Ihr Google-Konto jederzeit und unabhängig von Immvela über
+          die{' '}
+          <a
+            href="https://security.google.com/settings/security/permissions"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Google-Sicherheitseinstellungen
+          </a>{' '}
+          entziehen. Zusätzlich löscht das Trennen eines verbundenen Kontos in
+          Immvela die dort gespeicherten Token.
         </p>
 
         <h2>5. Server-Logfiles</h2>
