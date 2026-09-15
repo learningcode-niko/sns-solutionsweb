@@ -234,6 +234,33 @@ import { IMMVELA_URL } from '@/lib/site'
  *     keep, not a mechanism this repo can verify — **if it is not true, cut it.**
  *   • **The tenant-separation bullet**, now corrected (see below).
  *
+ * ── The wording-parity round, 2026-09-15 ───────────────────────────────────
+ *
+ * The SNS policy took a set of corrections this page did not, so for a few
+ * hours the BETTER text was on the page nobody reviews. Ported here:
+ *
+ *   • `das schutzbedürftigste Datum, das wir halten` → `die
+ *     sicherheitskritischsten Daten, die wir speichern`. Two anglicisms in six
+ *     words: `Datum` as the singular of `Daten` reads to an Austrian reader as a
+ *     CALENDAR DATE, and `Daten halten` is a calque — German *speichert* data.
+ *     The superlative also narrows: "most sensitive" is contradicted by this
+ *     page's own account of buyer and seller data; what was meant is
+ *     security-criticality.
+ *   • `im Ruhezustand verschlüsselt` → `verschlüsselt gespeichert`. *Ruhezustand*
+ *     is a machine's HIBERNATION. There is no settled German calque for "at
+ *     rest", and `verschlüsselt gespeichert` is the term this page itself used
+ *     before the 09-05 round replaced it with an invention.
+ *   • `Berechtigungen anfragen` → `anfordern`. `anfragen` means to ENQUIRE.
+ *
+ * ⚠️ **NOT ported: `Auftragsverarbeiter` → `Unterauftragsverarbeiter`.** The SNS
+ * policy took that one because ITS §4.1 calls SNS the processor, so using the
+ * same noun for Supabase two sections later read as "we may disclose data to
+ * ourselves". This page never applies the noun to SNS and its section is titled
+ * `Auftragsverarbeiter`, so the bullet's "oben genannten Auftragsverarbeiter" is
+ * internally consistent. Strictly they ARE sub-processors — this page's last
+ * section has SNS processing `in Ihrem Auftrag` — so the accurate fix renames
+ * the SECTION too. That is a bigger call than a wording port and is left alone.
+ *
  * ⚠️ The email's finding 2 (scope mismatch) is NOT a policy matter and is
  * already fixed in the app repo: the broad `auth/youtube` was removed 09-10, two
  * days after the email, and `main` carries exactly `youtube.upload` +
@@ -412,8 +439,8 @@ export default function ImmvelaPrivacyPage() {
                 .
               </p>
               <p>
-                <strong>Welche Berechtigungen wir anfragen.</strong> Wenn Sie ein YouTube-Konto
-                verbinden, fragen wir bei Google genau zwei Berechtigungen an — nicht mehr, als die
+                <strong>Welche Berechtigungen wir anfordern.</strong> Wenn Sie ein YouTube-Konto
+                verbinden, fordern wir bei Google genau zwei Berechtigungen an — nicht mehr, als die
                 Funktionen benötigen:
               </p>
               <ul>
@@ -528,8 +555,9 @@ export default function ImmvelaPrivacyPage() {
                   erfolgt ausschließlich verschlüsselt über TLS (HTTPS).
                 </li>
                 <li>
-                  <strong>Zugriffstoken der verbundenen Konten.</strong> Diese Token sind das
-                  schutzbedürftigste Datum, das wir halten, und werden vor dem Speichern mit{' '}
+                  <strong>Zugriffstoken der verbundenen Konten.</strong> Diese Token sind die
+                  sicherheitskritischsten Daten, die wir speichern, und werden vor dem Speichern
+                  mit{' '}
                   <strong>AES-256-GCM</strong> verschlüsselt. Der Schlüssel liegt ausschließlich in
                   der Laufzeitumgebung und niemals in der Datenbank: ein Datenbankauszug allein
                   genügt nicht, um Zugriff auf Ihre Konten zu erlangen. Fehlt der Schlüssel, so
@@ -538,7 +566,7 @@ export default function ImmvelaPrivacyPage() {
                 </li>
                 <li>
                   <strong>Speicherung.</strong> Datenbank und Dateispeicher werden von Supabase
-                  betrieben und sind dort im Ruhezustand verschlüsselt.
+                  betrieben und dort verschlüsselt gespeichert.
                 </li>
                 <li>
                   <strong>Trennung der Mandanten.</strong> Jeder Datensatz ist genau einer
@@ -792,8 +820,9 @@ export default function ImmvelaPrivacyPage() {
                   between Immvela and the platforms&apos; APIs — is encrypted with TLS (HTTPS).
                 </li>
                 <li>
-                  <strong>Connected-account access tokens.</strong> These are the most sensitive
-                  data we hold, and they are encrypted with <strong>AES-256-GCM</strong> before they
+                  <strong>Connected-account access tokens.</strong> These are the most
+                  security-sensitive data we hold, and they are encrypted with{' '}
+                  <strong>AES-256-GCM</strong> before they
                   are stored. The key exists only in the runtime environment and never in the
                   database, so a database dump on its own does not yield access to your accounts. If
                   the key is absent, the system refuses to store tokens in production rather than
