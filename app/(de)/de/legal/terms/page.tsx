@@ -14,7 +14,7 @@ export const metadata: Metadata = {
   },
 }
 
-const UPDATED = '30. Juli 2026'
+const UPDATED = '15. September 2026'
 
 export default function TermsPageDe() {
   return (
@@ -123,6 +123,39 @@ export default function TermsPageDe() {
           zusätzlich deren jeweiligen Entwicklerbedingungen und -richtlinien
           (Meta, LinkedIn, Google/YouTube, TikTok), und der Kunde ist für die
           Einhaltung dieser Bedingungen verantwortlich.
+        </p>
+        <p>
+          Für die Veröffentlichung auf YouTube nutzt Immvela die YouTube API
+          Services.{' '}
+          <strong>
+            Mit der Nutzung dieser Funktionen erklären Sie sich damit
+            einverstanden, an die{' '}
+            <a
+              href="https://www.youtube.com/t/terms"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              YouTube Terms of Service
+            </a>{' '}
+            gebunden zu sein.
+          </strong>{' '}
+          Für die von Google erhaltenen Daten gilt die{' '}
+          <a
+            href="https://policies.google.com/privacy"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Google-Datenschutzerklärung
+          </a>
+          ; der Immvela erteilte Zugriff kann jederzeit über die{' '}
+          <a
+            href="https://security.google.com/settings/security/permissions"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Google-Sicherheitseinstellungen
+          </a>{' '}
+          entzogen werden.
         </p>
 
         <h3>4.3 KI-Ergebnisse sind Entwürfe, keine Beratung</h3>
