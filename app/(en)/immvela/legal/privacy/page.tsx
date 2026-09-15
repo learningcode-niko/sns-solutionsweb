@@ -208,12 +208,41 @@ import { IMMVELA_URL } from '@/lib/site'
  *     bullet was false on its face and the saving context sat in a different
  *     section. Both halves now name the platforms.
  *
- * ⚠️ **NOT changed, and deliberately:** the tenant-separation bullet. A review
- * of the SNS page found "checked in two places" still over-claims, because the
- * service role bypasses RLS on every token WRITE (`platform_connection` carries
- * a SELECT-only policy). The SNS page took the sharper wording. **This page is
- * now the weaker of the two on that bullet and should follow** — left out here
- * only to keep this diff to the parity gaps it set out to close.
+ * ── The Google email of 2026-09-08, read on 2026-09-15 ─────────────────────
+ *
+ * ⚠️ **THIS is the page Google reviews.** The Cloud Console registers home page
+ * `https://immvela.com`, privacy `https://www.immvela.com/legal/privacy`, terms
+ * `https://www.immvela.com/legal/terms`. A handoff that sent this round at the
+ * SNS policy was working from the wrong premise; the SNS page was fixed anyway
+ * (it was independently wrong) but it is NOT what the reviewer opens.
+ *
+ * The email's finding 1 is the SAME privacy-policy wording finding, and it
+ * arrived **three days after** "Schutz Ihrer Daten" went live here on 09-05. So
+ * a security section existing is demonstrably not sufficient on its own. What
+ * this round adds is what the section did not have:
+ *
+ *   • **The Limited Use affirmation**, absent entirely (above).
+ *   • **Cookies and device storage** — YouTube API Services Developer Policies
+ *     §III.A.2(g) wants device storage disclosed and this page said nothing at
+ *     all. The app sets a Supabase auth cookie (`lib/supabase/server.ts`).
+ *   • **An organisational measure.** The section opened by promising technical
+ *     AND organisational controls and listed six technical ones, because "Our
+ *     own access" was cut on 09-05 as unverifiable. ⚠️ **It returns here in a
+ *     NARROWED form**: the restriction only. The 2FA, named-accounts and
+ *     individual-logins claims stay cut, and the logging claim stays cut, since
+ *     no audit table exists. What remains is a commitment the company chooses to
+ *     keep, not a mechanism this repo can verify — **if it is not true, cut it.**
+ *   • **The tenant-separation bullet**, now corrected (see below).
+ *
+ * ⚠️ The email's finding 2 (scope mismatch) is NOT a policy matter and is
+ * already fixed in the app repo: the broad `auth/youtube` was removed 09-10, two
+ * days after the email, and `main` carries exactly `youtube.upload` +
+ * `youtube.readonly`. What is owed there is a DEPLOY check and a new demo video.
+ *
+ * **The tenant-separation bullet is now corrected here too.** "Checked in two
+ * places" over-claims: the service role bypasses RLS on every token WRITE
+ * (`platform_connection` carries a SELECT-only policy), so the application is
+ * the only boundary on that path. Both live policies now say so.
  */
 
 export const metadata: Metadata = {
@@ -513,10 +542,12 @@ export default function ImmvelaPrivacyPage() {
                 </li>
                 <li>
                   <strong>Trennung der Mandanten.</strong> Jeder Datensatz ist genau einer
-                  Organisation zugeordnet, und diese Trennung wird an <strong>zwei</strong> Stellen
-                  geprüft: von der Anwendung bei jedem Zugriff und zusätzlich von der Datenbank
-                  selbst auf Zeilenebene (Row-Level-Security). Für Dateien im Medienspeicher prüft
-                  sie die Anwendung.
+                  Organisation zugeordnet, und die Anwendung prüft diese Trennung bei jedem
+                  Zugriff. Läuft eine Anfrage unter Ihrer eigenen Anmeldung, setzt die Datenbank
+                  sie zusätzlich auf Zeilenebene durch (Row-Level-Security). Hintergrundaufgaben
+                  und serverseitige Vorgänge, die ein Plattform-Token speichern, nutzen erweiterte
+                  Datenbankrechte; dort ist die Prüfung der Anwendung die Grenze, ebenso wie bei
+                  Dateien im Medienspeicher.
                 </li>
                 <li>
                   <strong>Mediendateien.</strong> Fotos und Videos liegen in nicht öffentlichem
@@ -528,7 +559,20 @@ export default function ImmvelaPrivacyPage() {
                   ausschließlich an die oben genannten Auftragsverarbeiter und an die von Ihnen
                   verbundenen Veröffentlichungsplattformen.
                 </li>
+                <li>
+                  <strong>Zugriff durch uns.</strong> Der Zugriff auf Produktivsysteme ist auf die
+                  Personen beschränkt, die ihn für Betrieb und Support benötigen.
+                </li>
               </ul>
+            </Section>
+
+            <Section lang="de" title="Cookies und Speicherung auf Ihrem Gerät">
+              <p>
+                Immvela setzt ein Cookie ausschließlich dafür, Sie angemeldet zu halten. Es ist für
+                den von Ihnen angeforderten Dienst unbedingt erforderlich, daher ist dafür keine
+                Einwilligung erforderlich. Wir setzen keine Tracking-, Werbe- oder
+                Analyse-Cookies und lesen zu keinem anderen Zweck Daten von Ihrem Gerät.
+              </p>
             </Section>
 
             <Section lang="de" title="Speicherdauer">
@@ -761,10 +805,11 @@ export default function ImmvelaPrivacyPage() {
                 </li>
                 <li>
                   <strong>Tenant separation.</strong> Every record belongs to exactly one
-                  organisation, and that separation is checked in <strong>two</strong> places: by
-                  the application on every access, and again by the database itself at row level
-                  (row-level security). For files in media storage it is enforced by the
-                  application.
+                  organisation, and the application checks that separation on every access. Where
+                  a request runs under your own sign-in, the database enforces it a second time at
+                  row level (row-level security). Background jobs and the server-side paths that
+                  store a platform token run with elevated database rights, and there the
+                  application check is the boundary, as it is for files in media storage.
                 </li>
                 <li>
                   <strong>Media files.</strong> Photos and videos are held in non-public storage and
@@ -775,7 +820,19 @@ export default function ImmvelaPrivacyPage() {
                   <strong>Disclosure.</strong> We do not sell data. We disclose it only to the
                   processors named above and to the publishing platforms you connect.
                 </li>
+                <li>
+                  <strong>Our own access.</strong> Access to production systems is limited to the
+                  people who need it to operate and support the service.
+                </li>
               </ul>
+            </Section>
+
+            <Section lang="en" title="Cookies and device storage">
+              <p>
+                Immvela sets a cookie only to keep you signed in. It is strictly necessary for the
+                service you asked for, so no consent is required for it. We set no tracking,
+                advertising or analytics cookies, and we read nothing else from your device.
+              </p>
             </Section>
 
             <Section lang="en" title="Retention">
